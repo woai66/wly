@@ -1,0 +1,256 @@
+/**
+  ******************************************************************************
+  * @file    Encoder.c
+  * @author  庄文标
+  * @brief   编码器驱动
+  * @date    11/04/2023
+    @verbatim
+    编码器数据处理
+    @endverbatim
+  * @{
+**/
+
+
+/* Includes ------------------------------------------------------------------*/
+#include "Encoder.h"
+#include "UserMain.h"
+
+/* Define\Declare ------------------------------------------------------------*/
+//编码器引脚
+//#define Encoder_LF                   (TIM1_ENCOEDER)
+//#define Encoder_LF_A                 (TIM1_ENCOEDER_MAP3_CH1_E9)
+//#define Encoder_LF_B                 (TIM1_ENCOEDER_MAP3_CH2_E11)
+//
+//#define Encoder_RF                   (TIM8_ENCOEDER)
+//#define Encoder_RF_A                 (TIM8_ENCOEDER_MAP0_CH1_C6)
+//#define Encoder_RF_B                 (TIM8_ENCOEDER_MAP0_CH2_C7)
+//
+//#define Encoder_LB                   (TIM1_ENCOEDER)
+//#define Encoder_LB_A                 (TIM1_ENCOEDER_MAP3_CH1_E9)
+//#define Encoder_LB_B                 (TIM1_ENCOEDER_MAP3_CH2_E11)
+//
+//#define Encoder_RB                   (TIM1_ENCOEDER)
+//#define Encoder_RB_A                 (TIM1_ENCOEDER_MAP3_CH1_E9)
+//#define Encoder_RB_B                 (TIM1_ENCOEDER_MAP3_CH2_E11)
+
+#define Encoder                   (TIM1_ENCOEDER)
+#define Encoder_A                 (TIM1_ENCOEDER_MAP3_CH1_E9)
+#define Encoder_B                 (TIM1_ENCOEDER_MAP3_CH2_E11)
+
+int16 Encoder_Pules_Buffer[4];//脉冲数组
+//int32 Distance_Buffer[4];//距离缓存数组
+float Encoer_Speed[1];//速度数组,顺序为LF RF LB RB
+//float Encoder_Distance[4];//实际距离数组
+const float Cm_Per = 0.0082832f;
+
+/**
+ ******************************************************************************
+ *  @defgroup 内部调用
+ *  @brief
+ *
+**/
+
+/**@brief   获取编码器速度
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/11/4
+**/
+//static void Get_Encoder_Pulses()
+//{
+//    Encoder_Pules_Buffer[0] = encoder_get_count(Encoder_LF);// 获取编码器计数
+//    Encoder_Pules_Buffer[1] = encoder_get_count(Encoder_RF);
+//    Encoder_Pules_Buffer[2] = encoder_get_count(Encoder_LB);
+//    Encoder_Pules_Buffer[3] = encoder_get_count(Encoder_RB);
+//}
+
+static void Get_Encoder_Pulses()
+{
+    Encoder_Pules_Buffer[0] = encoder_get_count(Encoder);// 获取编码器计数
+}
+
+///**@brief   获取左前轮速度
+//-- @param   无
+//-- @auther  庄文标
+//-- @date    2023/11/4
+//**/
+//static float Get_LF_Speed()
+//{
+//    static float Filter;
+//    float Speed = (Encoder_Pules_Buffer[0] / 600.0f)*100.0f;
+//    Filter = 0.25f*Speed + Filter*0.75f;
+//    return Filter;
+//}
+//
+///**@brief   获取右前轮速度
+//-- @param   无
+//-- @auther  庄文标
+//-- @date    2023/11/4
+//**/
+//static float Get_RF_Speed()
+//{
+//    static float Filter;
+//    float Speed = (Encoder_Pules_Buffer[1] / 600.0f)*100.0f;
+//    Filter = 0.25f*Speed + Filter*0.75f;
+//    return -Filter;
+//}
+//
+///**@brief   获取左后轮速度
+//-- @param   无
+//-- @auther  庄文标
+//-- @date    2023/11/4
+//**/
+//static float Get_LB_Speed()
+//{
+//    static float Filter;
+//    float Speed = (Encoder_Pules_Buffer[2] / 600.0f)*100.0f;
+//    Filter = 0.25f*Speed + Filter*0.75f;
+//    return Filter;
+//}
+//
+///**@brief   获取右后轮速度
+//-- @param   无
+//-- @auther  庄文标
+//-- @date    2023/11/4
+//**/
+//static float Get_RB_Speed()
+//{
+//    static float Filter;
+//    float Speed = (Encoder_Pules_Buffer[3] / 600.0f)*100.0f;
+//    Filter = 0.25f*Speed + Filter*0.75f;
+//    return -Filter;
+//}
+
+/**@brief   获取后轮速度
+-- @param   无
+-- @auther
+-- @date
+**/
+static float Get_encoder_Speed()
+{
+    static float Filter;
+    float Speed = (Encoder_Pules_Buffer[0] / 600.0f)*100.0f;
+    Filter = 0.25f*Speed + Filter*0.75f;
+    return Filter;
+}
+/**@brief   获取距离
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/12/6
+**/
+//static void Get_Distance()
+//{
+//    if(Navigation.Start_Flag)//开启惯性导航，开始距离解算
+//    {
+//        for(int i = 0;i<=3;i++)
+//        {
+//            Distance_Buffer[i] = Encoder_Pules_Buffer[i];
+//        }
+//        for(int i = 0;i<=3;i++)
+//        {
+//            Encoder_Distance[i] += Distance_Buffer[i]*Cm_Per;
+//        }
+//    }
+//    else
+//    {
+//        for(int i = 0;i<=3;i++)//清空
+//        {
+//            Distance_Buffer[i] = 0;
+//            Encoder_Distance[i] = 0;
+//        }
+//    }
+//
+//}
+
+/**
+ ******************************************************************************
+ *  @defgroup 外部调用
+ *  @brief
+ *
+**/
+
+/**@brief   所有编码器初始化
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/11/4
+**/
+//void All_Encoder_Init()
+//{
+//    encoder_quad_init(Encoder_LF, Encoder_LF_A, Encoder_LF_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
+//    encoder_quad_init(Encoder_RF, Encoder_RF_A, Encoder_RF_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
+//    encoder_quad_init(Encoder_LB, Encoder_LB_A, Encoder_LB_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
+//    encoder_quad_init(Encoder_RB, Encoder_RB_A, Encoder_RB_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
+//}
+void All_Encoder_Init()
+{
+    encoder_quad_init(Encoder, Encoder_A, Encoder_B);                     // 初始化编码器模块与引脚 正交解码编码器模式
+
+}
+
+/**@brief   编码器进程
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/12/7
+**/
+void Encoder_Process()
+{
+    Get_Encoder_Pulses();//获取编码器计数值
+//    Get_Distance();//距离解算
+    Encoer_Speed[0] = GetSpeed();
+//    Encoer_Speed[1] = Get_RF_Speed();
+//    Encoer_Speed[2] = Get_LB_Speed();
+//    Encoer_Speed[3] = Get_RB_Speed();
+    encoder_clear_count(Encoder);// 清空编码器计数
+
+}
+
+/**@brief   编码器偏航角获取
+-- @param   无
+-- @auther  庄文标
+-- @date    2023/12/7
+**/
+//float Encoder_YawAngle_Get()
+//{
+//    float L_Distance = Encoder_Distance[0] + Encoder_Distance[2];
+//    float R_Distance = -Encoder_Distance[1] + (-Encoder_Distance[3]);
+//    return (((L_Distance-R_Distance)/2.0f)/60)*90;
+//}
+
+///**@brief   X轴距离获取
+//-- @param   无
+//-- @auther  庄文标
+//-- @date    2023/12/7
+//**/
+//float Get_X_Distance()
+//{
+//    return (Encoder_Distance[0] + (-Encoder_Distance[3]) - Encoder_Distance[2] - (-Encoder_Distance[1]))/4.0f;
+//}
+//
+///**@brief   Y轴距离获取
+//-- @param   无
+//-- @auther  庄文标
+//-- @date    2023/12/7
+//**/
+//float Get_Y_Distance()
+//{
+//    return (Encoder_Distance[0] + (-Encoder_Distance[3]) + Encoder_Distance[2] + (-Encoder_Distance[1]))/4.0f;
+//}
+//
+///**@brief   X轴速度获取
+//-- @param   无
+//-- @auther  庄文标
+//-- @date    2023/12/7
+//**/
+//float Get_X_Speed()
+//{
+//    return (Encoer_Speed[0] + Encoer_Speed[3] - Encoer_Speed[2] - Encoer_Speed[1])/4.0f;
+//}
+//
+///**@brief   Y轴速度获取
+//-- @param   无
+//-- @auther  庄文标
+//-- @date    2023/12/7
+//**/
+//float Get_Y_Speed()
+//{
+//    return (Encoer_Speed[0] - Encoer_Speed[3] + Encoer_Speed[2] - Encoer_Speed[1])/4.0f;
+//}
