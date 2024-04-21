@@ -1,6 +1,6 @@
 # code for micropython 1.10 on esp8266
 
-import random
+
 
 import machine
 import st7789py as st7789
