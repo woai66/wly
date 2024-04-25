@@ -1,7 +1,6 @@
 import random
 from machine import Pin, SoftSPI
 import st7789py as st7789
-from romfonts import vga1_16x32 as font
 
 # Choose a font
 
@@ -16,7 +15,7 @@ from romfonts import vga1_16x32 as font
 # from romfonts import vga1_16x32 as font
 # from romfonts import vga1_bold_16x32 as font
 # from romfonts import vga2_16x32 as font
-# from romfonts import vga1_16x32 as font
+from romfonts import vga1_16x32 as font
 
 
 def main():
