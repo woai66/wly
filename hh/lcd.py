@@ -35,7 +35,7 @@ def main():
             for _ in range(100):
                 tft.text_gb32(
                     font_gb,
-                    "王燕聆我喜欢你",
+                    "章永琪我喜欢你",
                     random.randint(0, col_max),
                     random.randint(0, row_max),
                     st7789.color565(
