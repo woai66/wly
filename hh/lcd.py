@@ -2,7 +2,6 @@ import random
 from machine import Pin, SoftSPI
 import st7789py as st7789
 from romfonts import font_gb_16x16 as font_gb
-from romfonts import vga1_16x32 as font
 
 # Choose a font
 
@@ -29,14 +28,14 @@ def main():
     while True:
         for rotation in range(4):
             tft.rotation(rotation)
-            tft.fill(st7789.BLUE)
-            col_max = tft.width - font_gb.WIDTH*6
+            tft.fill(st7789.PINK)
+            col_max = tft.width - font_gb.WIDTH*14
             row_max = tft.height - font_gb.HEIGHT
 
             for _ in range(100):
                 tft.text_gb32(
                     font_gb,
-                    "容易",
+                    "王燕聆我喜欢你",
                     random.randint(0, col_max),
                     random.randint(0, row_max),
                     st7789.color565(
