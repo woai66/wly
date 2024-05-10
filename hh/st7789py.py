@@ -949,6 +949,22 @@ class ST7789():
                                  row_in + row + 19)
                 self._write(None, buffer)
 
+    def showPic120(self, filename, col_in=0, row_in=0):
+        with open(filename, "rb") as f:
+            f.seek(0)
+            for row in range(0, 120, 20):  # 每次处理20行
+                buffer = f.read(4800)  # 120x20像素，每像素24位色（3字节），共4800字节
+                self._set_window(col_in, row_in + row, col_in + 119, row_in + row + 19)
+                self._write(None, buffer)
+
+    def showPic150(self, filename, col_in=0, row_in=0):
+        with open(filename, "rb") as f:
+            f.seek(0)
+            for row in range(0, 150, 25):  # 每次处理25行
+                buffer = f.read(9000)  # 150x25像素，每像素24位色（3字节），共9000字节
+                self._set_window(col_in, row_in + row, col_in + 149, row_in + row + 24)
+                self._write(None, buffer)
+
     def showPic240(self, filename):
         with open(filename, "rb") as f:
             f.seek(0)
